@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LinqPadCosmosDB.Tests/LinqPadCosmosDB.Tests.csproj" />
+  <Project Path="LinqPadCosmosDB/LinqPadCosmosDB.csproj" />
+</Solution>
