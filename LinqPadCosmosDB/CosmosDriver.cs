@@ -9,7 +9,7 @@ namespace LinqPadCosmosDB;
 
 public class CosmosDriver : DynamicDataContextDriver
 {
-    private enum InferredKind
+    internal enum InferredKind
     {
         Null,
         Boolean,
@@ -24,7 +24,7 @@ public class CosmosDriver : DynamicDataContextDriver
         Mixed
     }
 
-    private sealed class InferredField
+    internal sealed class InferredField
     {
         private InferredKind arrayElementKind = InferredKind.Null;
         private bool isArrayElementOptional;
@@ -275,7 +275,7 @@ public class CosmosDriver : DynamicDataContextDriver
             var kind = InferKind(property.Value);
             if (!fields.TryGetValue(property.Name, out var field))
             {
-                field = new InferredField(kind == InferredKind.Null ? InferredKind.String : kind);
+                field = new InferredField(kind);
                 fields[property.Name] = field;
             }
 

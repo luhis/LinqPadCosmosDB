@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="LinqPadCosmosDB.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="LinqPadCosmosDB.Tests\**\*.cs" />
     <EmbeddedResource Remove="LinqPadCosmosDB.Tests\**\*" />
     <None Remove="LinqPadCosmosDB.Tests\**\*" />
