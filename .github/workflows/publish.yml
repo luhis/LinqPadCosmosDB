@@ -1,0 +1,57 @@
+name: Publish NuGet package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+            6.0.x
+
+      - name: Set package version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^v', ''
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$') {
+            throw "Tag '$env:GITHUB_REF_NAME' must be vMAJOR.MINOR.PATCH, optionally followed by a prerelease or build suffix."
+          }
+          "value=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore LinqPadCosmosDB.slnx
+
+      - name: Test
+        run: dotnet test LinqPadCosmosDB.Tests/LinqPadCosmosDB.Tests.csproj --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack LinqPadCosmosDB/LinqPadCosmosDB.csproj --configuration Release --no-restore --output ./artifacts -p:Version=${{ steps.version.outputs.value }}
+
+      - name: Publish to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        shell: pwsh
+        run: |
+          $packages = Get-ChildItem -Path ./artifacts -Filter *.nupkg
+          if ($packages.Count -ne 1) {
+            throw "Expected one NuGet package, found $($packages.Count)."
+          }
+          dotnet nuget push $packages[0].FullName --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
