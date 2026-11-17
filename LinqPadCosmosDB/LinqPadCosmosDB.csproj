@@ -10,6 +10,7 @@
     <Version>0.0.1</Version>
     <PackageTags>linqpaddriver cosmosdb</PackageTags>
     <Description>Azure Cosmos DB for NoSQL driver for LINQPad 7 and 9.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
